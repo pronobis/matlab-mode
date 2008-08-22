@@ -199,8 +199,9 @@ Return list is:
 
 (defcustom-mode-local-semantic-dependency-system-include-path
   matlab-mode semantic-matlab-dependency-system-include-path
-  (concat (file-name-as-directory semantic-matlab-root-directory)
-				  "toolbox/matlab")
+  (list
+   (concat (file-name-as-directory semantic-matlab-root-directory)
+	   "toolbox/matlab"))
   "The system include paths from MATLAB.")
 
 (defvar semantic-matlab-display-docstring t
