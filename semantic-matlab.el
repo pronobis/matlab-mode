@@ -48,18 +48,17 @@ private directories will be omitted here.")
   (let* ((mlab (locate-file "matlab" exec-path))
 	 (mlint (and (boundp 'mlint-program)
 		     mlint-program))
-	 (dir (cond (mlab
-		     (file-name-directory mlab))
-		    (mlint
-		     (file-name-directory mlint))
-		    )))
-    ;; If we have a dir, take everything until /bin as root dir.
-    (if dir
-	(progn (string-match "\\(.*\\)/bin.*" dir)
-	       (match-string 1 dir))
-      nil)
-    )
-  "Root directory of MATLAB installation.  
+	 (exe (or mlab mlint)))
+    (if exe
+	(let ((dir
+	       (or (file-symlink-p exe)
+		   exe)))
+	  ;; If we have a dir, take everything until /bin as root dir.
+	  (string-match "\\(.*\\)/bin.*" dir)
+	  (match-string 1 dir))
+      (message "semantic-matlab: Could not find MATLAB executable in path.")
+      nil))
+  "Root directory of MATLAB installation.
 Will be automatically determined by MATLAB or mlint executable.
 Use `semantic-matlab-system-paths-include' to let semantic know
 which system directories you would like to include when doing
