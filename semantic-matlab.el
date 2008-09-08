@@ -352,13 +352,19 @@ where NAME is unique."
 				 (regexp-quote matlab-elipsis-string) "\\s-*$"))))
 	    (setq left
 		  (concat (match-string-no-properties 1) left))))
-	;; remove bracket expressions on the left-hand side
-	(while (string-match "\\((.*)\\|{.*}\\)" left)
+	;; remove bracket expressions and beginning/trailing whitespaces on left-hand side
+	(while (or (string-match "\\((.*)\\|{.*}\\)" left)
+		   (string-match "^\\(\\s-+\\)" left)
+		   (string-match "\\(\\s-+\\)$" left))
 	  (setq left (replace-match "" t t left)))
 	;; deal with right-hand side
 	(cond
-	 ;; special case: class=set(class,attribute,value)
-	 ((string-match "\\s-*set(\\([A-Za-z_0-9 ]+\\)," right)
+	 ;; special case: a = set(class,attribute,value)
+	 ((string-match "\\s-*set(\\s-*\\([A-Za-z_0-9 ]+\\)\\s-*," right)
+	  (setq right (match-string 1 right)))
+	 ;; method call which returns same class: class=method(class [,args])
+	 ((and (string-match "\\s-*[A-Za-z_0-9 ]+\\s-*(\\s-*\\([A-Za-z_0-9 ]+\\)\\s-*\\(,\\|)\\)" right)
+	       (string= left (match-string 1 right)))
 	  (setq right (match-string 1 right)))
 	;; otherwise reduce right-hand side to first symbol
 	(t 
