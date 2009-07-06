@@ -33,6 +33,7 @@
 ;;
 ;; Caveat: MCOS classes have property declarations. @todo - support them
 
+(require 'mode-local)
 (require 'semantic)
 (require 'semantic-format)
 (require 'matlab)
@@ -606,11 +607,6 @@ This will include a list of type/field names when applicable."
 	semantic-stickyfunc-sticky-classes '(function)
 	)
   )
-
-;; Enable this autoload once versions of matlab.el are synchronized and
-;; generally available.
-;;;###autoload
-(add-hook 'matlab-mode-hook 'semantic-default-matlab-setup)
 
 (provide 'semantic-matlab)
 
