@@ -1168,7 +1168,7 @@ All Key Bindings:
   (make-local-variable 'comment-start)
   (setq comment-start "%")
   (make-local-variable 'page-delimiter)
-  (setq page-delimiter "^\\(\f\\|%% \\)")
+  (setq page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
   (make-local-variable 'comment-column)
   (setq comment-column matlab-comment-column)
   (make-local-variable 'comment-indent-function)
