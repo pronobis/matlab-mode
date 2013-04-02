@@ -1,6 +1,6 @@
 ;;; cedet-matlab.el --- CEDET Setup support
 ;;
-;; Copyright (C) 2009 Eric Ludlam
+;; Copyright (C) 2009, 2012 Eric Ludlam
 ;;
 ;; Author: Eric Ludlam <eludlam@mathworks.com>
 ;; X-RCS: $Id$
@@ -45,7 +45,10 @@
       (error "Unable to locate MATLAB Templates directory"))
 
     ;; Rig up the map.
-    (require 'srecode-map)
+    (condition-case nil
+	(require 'srecode-map)
+      (error (require 'srecode/map)))
+
     (add-to-list 'srecode-map-load-path tmpdir)
     (srecode-map-update-map t)
     )
