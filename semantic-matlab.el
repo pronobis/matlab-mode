@@ -1,6 +1,6 @@
 ;;; semantic-matlab.el --- Semantic details for MATLAB files
 
-;;; Copyright (C) 2004, 2005, 2008 Eric M. Ludlam: The Mathworks, Inc
+;;; Copyright (C) 2004, 2005, 2008, 2012 Eric M. Ludlam: The Mathworks, Inc
 
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; X-RCS: $Id$
@@ -35,7 +35,10 @@
 
 (require 'mode-local)
 (require 'semantic)
-(require 'semantic-format)
+(eval-and-compile
+  (condition-case nil
+      (require 'semantic-format)
+    (error (require 'semantic/format))))
 (require 'matlab)
 (require 'semanticdb-matlab)
 
