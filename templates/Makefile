@@ -1,5 +1,6 @@
 # Automatically Generated Makefile by EDE.
 # For use with: make
+# Relative File Name: templates/Makefile
 #
 # DO NOT MODIFY THIS FILE OR YOUR CHANGES MAY BE LOST.
 # EDE is the Emacs Development Environment.
@@ -10,7 +11,7 @@ top=../
 ede_FILES=Project.ede Makefile
 
 templates_MISC=srecode-matlab.srt
-VERSION=3.3.0
+VERSION=3.3.1
 DISTDIR=$(top)matlab-emacs-$(VERSION)/templates
 
 
