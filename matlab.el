@@ -7,7 +7,7 @@
 ;; Keywords: MATLAB(R)
 ;; Version:
 
-(defconst matlab-mode-version "3.3.1"
+(defconst matlab-mode-version "3.3.2"
   "Current version of MATLAB(R) mode.")
 
 ;;
@@ -1860,13 +1860,16 @@ Optional BEGINNING is where the command starts from."
 
 (defun matlab-ltype-comm ()		; comment line
   "Return t if current line is a MATLAB comment line.
-Return the symbol 'cellstart if it is a double %%."
+Return the symbol 'cellstart if it is a double %%.
+Return the symbol 'blockcomm if it is a block comment start."
   (save-excursion
     (beginning-of-line)
     (cond ((looking-at "[ \t]*%\\([^%]\\|$\\)")
 	   t)
 	  ((looking-at "[ \t]*%%")
 	   'cellstart)
+          ((matlab-ltype-block-comm)
+           'blockcomm)
 	  (t nil))))
 
 (defun matlab-ltype-comm-ignore ()	; comment out a region line
@@ -1884,6 +1887,15 @@ Return the symbol 'cellstart if it is a double %%."
 		  (matlab-prev-line))
 	(beginning-of-line))
       (matlab-ltype-function-definition))))
+
+(defun matlab-ltype-block-comm ()
+  "Return t if we are in a block comment."
+  (save-excursion
+    (if (looking-at "%{")
+        t
+      (when (re-search-backward "\\%\\([{}]\\)" nil t)
+        (let ((ms (match-string 1)))
+          (if (string= ms "{") t nil))))))
 
 (defun matlab-ltype-endfunction-comm ()
   "Return t if the current line is an ENDFUNCTION style comment."
@@ -4284,6 +4296,7 @@ Try C-h f matlab-shell RET"))
 		matlab-help-map)
               (define-key km "\C-c." 'matlab-find-file-on-path)
 	      (define-key km [(tab)] 'matlab-shell-tab)
+	      (define-key km "\C-i" 'matlab-shell-tab)
 	      (define-key km [(control up)]
 		'comint-previous-matching-input-from-input)
 	      (define-key km [(control down)]
@@ -4299,8 +4312,12 @@ Try C-h f matlab-shell RET"))
 		'matlab-shell-delete-backwards-no-prompt)
 	      km)))
     (switch-to-buffer
-      (apply 'make-comint matlab-shell-buffer-name matlab-shell-command
-		   nil matlab-shell-command-switches))
+     ;; Thx David Chappaz for reminding me about this patch.
+     (let* ((windowid (frame-parameter (selected-frame) 'outer-window-id))
+            (newvar (concat "WINDOWID=" windowid))
+            (process-environment (cons newvar process-environment)))
+       (apply 'make-comint matlab-shell-buffer-name matlab-shell-command
+              nil matlab-shell-command-switches)))
     
     (setq shell-dirtrackp t)
     (comint-mode)
