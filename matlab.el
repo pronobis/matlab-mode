@@ -1059,7 +1059,7 @@ st\\(a\\(ck\\|tus\\)\\|ep\\|op\\)\\|type\\|up\\)\\)\\>")
    '("^\\(Error in\\|Syntax error in\\)\\s-+==>\\s-+\\(.+\\)$"
      (1 font-lock-comment-face) (2 font-lock-string-face))
    ;; and line numbers
-   '("^\\(On line [0-9]+\\)" 1 font-lock-comment-face)
+   '("^\\(\\(On \\)?line [0-9]+\\)" 1 font-lock-comment-face)
    ;; User beep things
    '("\\(\\?\\?\\?[^\n]+\\)" 1 font-lock-comment-face)
    ;; Useful user commands, but not useful programming constructs
@@ -2719,11 +2719,16 @@ Argument ARG specifies how many %s to insert."
 	 (skip-chars-forward " \t%"))
 	((matlab-lattr-comm)		; code line w/ comment
 	 (beginning-of-line)
-	 (re-search-forward "[^%]%[ \t]")
-	 (forward-char -2)
+	 (re-search-forward "[^%]\\(%\\)[ \t]")
+	 (goto-char (match-beginning 1))
 	 (if (> (current-column) comment-column) (delete-horizontal-space))
 	 (if (< (current-column) comment-column) (indent-to comment-column))
-	 (skip-chars-forward "% \t"))
+         ;; Now see if the current line is too long to fit.  Can we backdent?
+         (let ((eol-col (- (point-at-eol) (point-at-bol))))
+           (when (> eol-col fill-column)
+             (delete-horizontal-space)
+             (indent-to (- comment-column (- eol-col fill-column)))))
+         (skip-chars-forward "% \t"))
 	(t				; code line w/o comment
 	 (end-of-line)
 	 (re-search-backward "[^ \t\n^]" 0 t)
@@ -3000,19 +3005,26 @@ filling which will automatically insert `...' and the end of a line."
 			;; if there isn't one already. Also add an apostrophe if necessary.
 		      (if (not (looking-at "'\\s-*]"))
 			  (save-excursion
-			    (if (not (re-search-forward "[^']'[^']" (line-end-position) t))
+			    (if (not (re-search-forward "[^']'\\([^']\\|$\\)" (line-end-position) t))
 				(progn
 				  (end-of-line)
 				  (insert "']")
 				  (move-marker m (- (point) 2)))
-			      (forward-char -2)
-			      (if (not (looking-at "'\\s-*]"))
-				  (progn
-				    (forward-char 1)
-				    (insert "]"))))))
-		  ))))
-	  (goto-char m)))
-      ))))
+			      (re-search-backward "'")
+                              (cond ((looking-at "'\\s-*]")
+                                     nil ; already in an array.
+                                     )
+                                    ((or (looking-at "'\\s-*$") (looking-at "'\\s-*[^]]"))
+                                     ;; in a string, add an array ender.
+                                     (forward-char 1)
+                                     (insert "]"))
+                                    ((looking-at "'\\s-*\\.\\.\\.")
+                                     ;; Already extended to next line ... leave it alone.
+                                     nil)
+                                    ))))
+                      ))))
+            (goto-char m)))
+         ))))
 
 (defun matlab-join-comment-lines ()
   "Join current comment line to the next comment line."
@@ -4443,9 +4455,9 @@ in a popup buffer.
   ;; Add a version scraping logo identification filter.
   (add-hook 'comint-output-filter-functions 'matlab-shell-version-scrape)
   ;; Add pseudo html-renderer
-  (add-hook 'comint-output-filter-functions 'matlab-shell-render-html-anchor nil t)
-  (add-hook 'comint-output-filter-functions 'matlab-shell-render-html-txt-format nil t)
-  (add-hook 'comint-output-filter-functions 'matlab-shell-render-errors-as-anchor nil t)
+  ;;(add-hook 'comint-output-filter-functions 'matlab-shell-render-html-anchor nil t)
+  ;;(add-hook 'comint-output-filter-functions 'matlab-shell-render-html-txt-format nil t)
+  ;;(add-hook 'comint-output-filter-functions 'matlab-shell-render-errors-as-anchor nil t)
   ;; Scroll to bottom after running cell/region
   (add-hook 'comint-output-filter-functions 'comint-postoutput-scroll-to-bottom)
 
@@ -4613,10 +4625,20 @@ Argument STR is the text for the text formater."
 ;; Syntax:  Syntax error in ==> <filename>
 ;;          On line # ==> <sample-text>
 ;; Warning: In <filename> at line # <stuff>
+;;
+;; New Error Formats:
+;; Errors:  Error in <function name> (line <#>)
 (defvar gud-matlab-error-regexp
-  (concat "\\(Error \\(?:in\\|using\\) ==>\\|Syntax error in ==>\\|In\\) "
-	  "\\([-@.a-zA-Z_0-9/ \\\\:]+\\)\\(?:>[^ ]+\\)?.*[\n ]\\(?:On\\|at\\)\\(?: line\\)? "
-	  "\\([0-9]+\\) ?")
+  (if nil
+      ;; Newer MATLAB's use this.  Debug and merge with below.
+      (concat "\\(Error \\(?:in\\|using\\)\\|Syntax error in\\) "
+              "\\([-@.a-zA-Z_0-9/\\\\:]+\\)[\n ]*(line "
+              "\\([0-9]+\\)) ?")
+    ;; else
+    (concat "\\(Error \\(?:in\\|using\\) ==>\\|Syntax error in ==>\\|In\\) "
+            "\\([-@.a-zA-Z_0-9/ \\\\:]+\\)\\(?:>[^ ]+\\)?.*[\n ]\\(?:On\\|at\\)\\(?: line\\)? "
+            "\\([0-9]+\\) ?")
+    ) ;; end if
   "Regular expression finding where an error occurred.")
 
 (defvar matlab-shell-last-error-anchor nil
