@@ -78,7 +78,7 @@ This package supports language specific extensions in imenu, func-menu,
 
 ** tlc.el
 
-To use this mode without using the full instatll, put the this file
+To use this mode without using the full install, put the this file
 into your load path, and add the following to your .emacs file:
 
   (require 'tlc)
