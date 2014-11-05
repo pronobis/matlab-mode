@@ -4858,9 +4858,7 @@ Optional argument ARG describes the number of chars to delete."
 STR is a substring to complete."
   (save-excursion
     (let* ((msbn (matlab-shell-buffer-barf-not-running))
-	   (cmd (concat "matlabMCRprocess = com.mathworks.jmi.MatlabMCR;"
-			"matlabMCRprocess.mtFindAllTabCompletions('"
-			str "'), clear('matlabMCRprocess');"))
+	   (cmd (concat "emacsdocomplete('" str "')"))
 	   (comint-scroll-show-maximum-output nil)
 	   output
 	   (completions nil))
