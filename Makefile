@@ -21,12 +21,12 @@ LOADDIRS=.
 misc_MISC=ChangeLog ChangeLog.old1 ChangeLog.old2 INSTALL README dl_emacs_support.m
 lisp_LISP=matlab.el mlint.el tlc.el matlab-publish.el linemark.el
 cedet_LISP=semantic-matlab.el semanticdb-matlab.el cedet-matlab.el company-matlab-shell.el
-VERSION=3.3.1
+VERSION=3.3.2
 DISTDIR=$(top)matlab-emacs-$(VERSION)
 
 
 
-all: autoloads misc lisp cedet Templates
+all: autoloads misc lisp cedet toolbox Templates
 
 .PHONY: clean-autoloads
 clean-autoloads: 
@@ -49,11 +49,16 @@ lisp: $(addsuffix c, $(lisp_LISP))
 .PHONY: cedet
 cedet: $(addsuffix c, $(cedet_LISP))
 
+.PHONY:toolbox
+toolbox:
+	$(MAKE) -C toolbox
+
 .PHONY:Templates
 Templates:
 	$(MAKE) -C templates
 
 tags: 
+	$(MAKE) -C toolbox/ $(MFLAGS) $@
 	$(MAKE) -C templates/ $(MFLAGS) $@
 
 
@@ -66,6 +71,7 @@ dist: autoloads
 	rm -rf $(DISTDIR)
 	mkdir $(DISTDIR)
 	cp matlab-load.el $(misc_MISC) $(lisp_LISP) $(cedet_LISP) $(ede_FILES) $(DISTDIR)
+	$(MAKE) -C toolbox $(MFLAGS) DISTDIR=$(DISTDIR)/toolbox dist
 	$(MAKE) -C templates $(MFLAGS) DISTDIR=$(DISTDIR)/templates dist
 	tar -cvzf $(DISTDIR).tar.gz $(DISTDIR)
 	rm -rf $(DISTDIR)
