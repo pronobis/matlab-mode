@@ -4867,7 +4867,7 @@ STR is a substring to complete."
 	  (error "MATLAB shell must be non-busy to do that"))
       (setq output (matlab-shell-collect-command-output cmd))
       ;; Debug
-      (string-match "ans =" output)
+      (string-match "emacs_completions_output =" output)
       (setq output (substring output (match-end 0)))
       ;; Parse the output string.
       (while (string-match "'" output)
