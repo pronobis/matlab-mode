@@ -23,6 +23,11 @@ function dl_emacs_support(varargin)
 %    dl_emacs_support dl
 %    dl_emacs_support
 %
+% On unix, you can then execute:
+%
+%   !make
+%
+% to compile.
 
     po = inputParser;
     
@@ -46,8 +51,8 @@ function dl_emacs_support(varargin)
     tlcFiles = { 'tlc.el' };
     cedetFiles = { 'cedet-matlab.el' 'semantic-matlab.el' ...
                    'semanticdb-matlab.el' 'templates/srecode-matlab.srt' };
-    supportFiles = { 'README' 'Makefile' ...
-                     'Project.ede' 'INSTALL' 'ChangeLog' ...
+    supportFiles = { 'README' 'INSTALL' 'ChangeLog' ...
+                     'Project.ede'  'Makefile' ...
                      'toolbox/Project.ede' 'toolbox/Makefile' ...
                      'templates/Project.ede' 'templates/Makefile'};
     
