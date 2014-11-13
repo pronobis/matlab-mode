@@ -6,6 +6,7 @@ function dl_emacs_support(varargin)
 %
 % DL_EMACS_SUPPORT(FILESET) - download a FILESET of Emacs support.
 % Sets are:
+%  dl - Download a new version of this download script.
 %  core - Just the core MATLAB support files.
 %  tlc - Just the core MATLAB/TLC support files.
 %  cedet - Core, plus additional support for MATLAB using CEDET support.
@@ -15,6 +16,13 @@ function dl_emacs_support(varargin)
 %
 % DL_EMACS_SUPPORT(FILESET,DEST) - download FILESET and save in
 %   destination directory DEST 
+%
+% For the most reliable refresh of the repository, run these two
+% commands, the frist will make sure the downloader is current.
+%
+%    dl_emacs_support dl
+%    dl_emacs_support
+%
 
     po = inputParser;
     
@@ -29,6 +37,8 @@ function dl_emacs_support(varargin)
         error(['The folder: ''',stuff.destination, ''', does not exist.']);
     end
 
+    downloader = { 'dl_emacs_support.m' };
+    
     coreFiles = { 'matlab-load.el' 'matlab.el' 'mlint.el' ...
                   'matlab-publish.el' 'company-matlab-shell.el' ...
                   'linemark.el' ...
@@ -36,12 +46,14 @@ function dl_emacs_support(varargin)
     tlcFiles = { 'tlc.el' };
     cedetFiles = { 'cedet-matlab.el' 'semantic-matlab.el' ...
                    'semanticdb-matlab.el' 'templates/srecode-matlab.srt' };
-    supportFiles = { 'dl_emacs_support.m' 'README' 'Makefile' ...
+    supportFiles = { 'README' 'Makefile' ...
                      'Project.ede' 'INSTALL' 'ChangeLog' ...
                      'toolbox/Project.ede' 'toolbox/Makefile' ...
                      'templates/Project.ede' 'templates/Makefile'};
     
     switch stuff.fileset
+      case 'dl'
+        getfiles(downloader);
       case 'core'
         mktoolboxdir
         getfiles(coreFiles);
