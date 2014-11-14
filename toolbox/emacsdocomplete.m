@@ -10,6 +10,7 @@ function emacsdocomplete(substring)
     if str2double(v.Version) < 8.4
         
         % Pre R2014b: partial_string
+        extracmd = '';
         
     else        
         
