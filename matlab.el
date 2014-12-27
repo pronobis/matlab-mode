@@ -11,7 +11,7 @@
   "Current version of MATLAB(R) mode.")
 
 ;;
-;; Copyright (C) 2004-2010 The Mathworks, Inc
+;; Copyright (C) 2004-2010, 2014 The Mathworks, Inc
 ;; Copyright (C) 1997-2004 Eric M. Ludlam: The MathWorks, Inc
 ;; Copyright (C) 1991-1997 Matthew R. Wette
 ;;
@@ -352,13 +352,14 @@ region."
   :type 'boolean)
 
 (defcustom matlab-mode-verify-fix-functions
-  '(matlab-mode-vf-functionname)
+  '(matlab-mode-vf-functionname matlab-mode-vf-classname)
   "List of function symbols which perform a verification and fix to M code.
 Each function gets no arguments, and returns nothing.  They can move
 point, but it will be restored for them."
   :group 'matlab
   :type '(repeat (choice :tag "Function: "
 			 '(matlab-mode-vf-functionname
+			   matlab-mode-vf-classname
 			   matlab-mode-vf-block-matches-forward
 			   matlab-mode-vf-block-matches-backward
 			   matlab-mode-vf-quiesce-buffer
@@ -1522,6 +1523,11 @@ Know that `match-end' of 0 is the end of the functin name."
   ;;"\\(^function\\s-+\\)\\([^=\n]+=[ \t\n.]*\\)?\\(\\sw+\\)"
   (concat "\\(^\\s-*function\\b[ \t\n.]*\\)\\(\\(\\[[^]]*\\]\\|\\sw+\\)"
 	  "[ \t\n.]*=[ \t\n.]*\\|\\(\\)\\)\\(\\sw+\\)"))
+
+(defun matlab-match-classdef-re ()
+  "Expression to match a classdef start line.
+The class name is match 2."
+  "\\(^\\s-*classdef\\b[ \t\n]*\\)\\(\\sw+\\)\\(\\s-*<\\)?")
 
 (defconst matlab-cline-start-skip "[ \t]*%[ \t]*"
   "*The regular expression for skipping comment start.")
@@ -3922,11 +3928,37 @@ Optional argument FAST is ignored."
 	      (begin (progn (goto-char (match-end 0))
 			    (forward-word -1)
 			    (point))))
-	  (setq func (buffer-substring begin end))
+	  (setq func (buffer-substring-no-properties begin end))
 	  (if (not (string= func bn))
 	      (if (not (matlab-mode-highlight-ask
 			begin end
 			"Function and file names are different. Fix?"))
+		  nil
+		(goto-char begin)
+		(delete-region begin end)
+		(insert bn))))))))
+
+(defun matlab-mode-vf-classname (&optional fast)
+  "Verify/Fix the class name of this file.
+Optional argument FAST is ignored."
+  (matlab-navigation-syntax
+    (goto-char (point-min))
+    ;; Skip over whitespace.
+    (while (and (or (matlab-ltype-empty) (matlab-ltype-comm))
+		(/= (matlab-point-at-eol) (point-max)))
+      (forward-line 1))
+    (let ((class nil)
+	  (bn (file-name-sans-extension
+	       (file-name-nondirectory (buffer-file-name)))))
+    (if (looking-at (matlab-match-classdef-re))
+	;; The name of this class is match 2.
+	(let ((end (match-end 2))
+	      (begin (match-beginning 2)))
+	  (setq class (buffer-substring-no-properties begin end))
+	  (if (not (string= class bn))
+	      (if (not (matlab-mode-highlight-ask
+			begin end
+			"Class name and file names are different. Fix?"))
 		  nil
 		(goto-char begin)
 		(delete-region begin end)
