@@ -4413,27 +4413,34 @@ STR is passed from the commint filter."
  				(make-glyph matlab-shell-logo))))
     ;; Remove this function from `comint-output-filter-functions'
     (remove-hook 'comint-output-filter-functions
- 		 'matlab-shell-hack-logo))
-  
-  )
+ 		 'matlab-shell-hack-logo)))
 
 (defun matlab-shell-version-scrape (str)
   "Scrape the MATLAB Version from the MATLAB startup text.
 Argument STR is the string to examine for version information."
+  ;; Older matlab versions
   (when (string-match "\\(Version\\)\\s-+\\([.0-9]+\\)\\s-+(\\(R[.0-9]+[ab]?\\))" str)
     ;; Extract the release number
     (setq matlab-shell-running-matlab-version
-	  (match-string 2 str)
-	  matlab-shell-running-matlab-release
-	  (match-string 3 str))
+          (match-string 2 str)
+          matlab-shell-running-matlab-release
+          (match-string 3 str)))
+  ;; Newer versions e.g. R2013a
+  (when (string-match "\\(R[.0-9]+[ab]?\\)\\s-+(\\([.0-9]+\\))" str)
+    ;; Extract the release number
+    (setq matlab-shell-running-matlab-version
+          (match-string 2 str)
+          matlab-shell-running-matlab-release
+          (match-string 1 str)))
+  (when matlab-shell-running-matlab-release
     ;; Now get our history loaded
     (setq comint-input-ring-file-name
-	  (format matlab-shell-history-file matlab-shell-running-matlab-release))
+          (format matlab-shell-history-file matlab-shell-running-matlab-release))
     (if (fboundp 'comint-read-input-ring)
-	(comint-read-input-ring t))
+        (comint-read-input-ring t))
     ;; Remove the scrape from our list of things to do.
     (remove-hook 'comint-output-filter-functions
-		 'matlab-shell-version-scrape)))
+                 'matlab-shell-version-scrape)))
 
 (defun matlab-shell-mode ()
   "Run MATLAB as a subprocess in an Emacs buffer.
