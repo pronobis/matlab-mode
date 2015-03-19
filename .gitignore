@@ -4,3 +4,6 @@ bugs
 *.diff
 semantic.cache
 MISC
+*.elc
+matlab-load.el
+matlab-load.el~
