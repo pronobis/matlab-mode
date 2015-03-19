@@ -20,7 +20,7 @@ LOADDEFS=matlab-load.el
 LOADDIRS=.
 misc_MISC=ChangeLog ChangeLog.old1 ChangeLog.old2 INSTALL README dl_emacs_support.m
 lisp_LISP=matlab.el mlint.el tlc.el matlab-publish.el linemark.el
-cedet_LISP=semantic-matlab.el semanticdb-matlab.el srecode-matlab.el cedet-matlab.el company-matlab-shell.el
+cedet_LISP=semantic-matlab.el semanticdb-matlab.el srecode-matlab.el cedet-matlab.el company-matlab-shell.el company-matlab.el
 VERSION=3.3.2
 DISTDIR=$(top)matlab-emacs-$(VERSION)
 
@@ -29,15 +29,15 @@ DISTDIR=$(top)matlab-emacs-$(VERSION)
 all: autoloads misc lisp cedet toolbox Templates
 
 .PHONY: clean-autoloads
-clean-autoloads: 
+clean-autoloads:
 	rm -f $(LOADDEFS)
 
 .PHONY: autoloads
-autoloads: 
+autoloads:
 	$(EMACS) $(EMACSFLAGS) $(AUTOGENFLAGS) $(addprefix -L ,$(LOADPATH)) --eval '(progn $(call require, $(PRELOADS)) (setq generated-autoload-file "$(abspath $(LOADDEFS))"))' -f batch-update-autoloads $(abspath $(LOADDIRS))
 
 
-misc: 
+misc:
 	@
 
 %.elc: %.el
@@ -57,7 +57,7 @@ toolbox:
 Templates:
 	$(MAKE) -C templates
 
-tags: 
+tags:
 	$(MAKE) -C toolbox/ $(MFLAGS) $@
 	$(MAKE) -C templates/ $(MFLAGS) $@
 

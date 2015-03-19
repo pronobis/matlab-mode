@@ -23,5 +23,5 @@
     (ede-proj-target-elisp "cedet"
       :name "cedet"
       :path ""
-      :source '("semantic-matlab.el" "semanticdb-matlab.el" "srecode-matlab.el" "cedet-matlab.el" "company-matlab-shell.el")
+      :source '("semantic-matlab.el" "semanticdb-matlab.el" "srecode-matlab.el" "cedet-matlab.el" "company-matlab-shell.el" "company-matlab.el")
       :aux-packages '("semantic"))))
