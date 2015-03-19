@@ -1,22 +1,36 @@
-matlab-emacs Project:
+This is an unofficial port of the MATLAB and Emacs integration mode from the project CVS repo  (http://sourceforge.net/projects/matlab-emacs/) to GitHub (as of March 2015). The following changes were added on top of the original project:
 
-MATLAB and Emacs integration
-
-* INSTALL
-
-  Add the following to your .emacs file:
-
-  ;; Replace path below to be where your matlab.el file is.
-  (add-to-list 'load-path "~/path/to/matlab-emacs")
-  (load-library "matlab-load")
-
-  ;; Enable CEDET feature support for MATLAB code. (Optional)
-  ;; (matlab-cedet-setup)
+1. Import to git
+2. New company-matlab.el backend that works both inside the Matlab shell and in Matlab files.
 
 
-* Finding Updates
+# Installation
 
-** Releases
+Add the following to your .emacs file:
+
+```
+;; Replace path below to be where your matlab.el file is.
+(add-to-list 'load-path "~/path/to/matlab-emacs")
+(load-library "matlab-load")
+
+;; Enable CEDET feature support for MATLAB code. (Optional)
+;; (matlab-cedet-setup)
+```
+
+To use the company completion engine, add company-matlab to company-mode backends list:
+
+```
+(add-to-list 'company-backends 'company-anaconda)
+```
+
+**NOTE!** In order for the completions to work Matlab shell must be started!
+
+
+# Original Project Documentation
+
+## Finding Updates
+
+### Releases
 
    The most recent version of matlab.el is always in CVS.
 
@@ -40,7 +54,7 @@ MATLAB and Emacs integration
    from before R2008a, you will want to use the version of mlint from
    that CD.
 
-** CVS
+### CVS
 
    matlab-emacs is available via CVS from SourceForge.
 
@@ -59,7 +73,7 @@ MATLAB and Emacs integration
 
    http://matlab-emacs.cvs.sourceforge.net/viewvc/matlab-emacs/matlab-emacs/dl_emacs_support.m
 
-** Dependancies
+### Dependancies
 
    MATLAB-Emacs can use the CEDET suite for the following items:
 	- Modifying the build system (Makefiles, etc)
@@ -81,9 +95,9 @@ MATLAB and Emacs integration
 
    (matlab-cedet-setup)
 
-* Mailing List:
+## Mailing List:
 
-** New Mailing List
+### New Mailing List
 
    A new matlab-emacs-discuss mailing lisit has been created at
    SourceForge.  Use this list to get updates on new releases and
@@ -91,7 +105,7 @@ MATLAB and Emacs integration
 
    http://lists.sourceforge.net/mailman/listinfo/matlab-emacs-discuss
 
-** Old Mailing List
+### Old Mailing List
 
    The original mailing list where beta versions of matlab.el were
    posted, and where comments, questions, bug reports, and answers to
