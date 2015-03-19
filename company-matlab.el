@@ -35,7 +35,8 @@
          (completions nil)
          (pre-shell-line nil)
          (post-shell-line nil)
-         (shell-buf (get-buffer (concat "*" matlab-shell-buffer-name "*"))))
+         (shell-buf (get-buffer (concat "*" matlab-shell-buffer-name "*")))
+         (inhibit-quit nil))            ; For some reason this is set and produces error
     ;; Remove everything before ;
     (setq cmd (replace-regexp-in-string ".*;" "" cmd))
     ;; Replace every ' with ''''
@@ -46,7 +47,7 @@
       (setq pre-shell-line(save-excursion (beginning-of-line) (point)))
       ;; Get completions
       (setq completions (let ((comint-inhibit-carriage-motion t))
-                        (matlab-shell-completion-list cmd))))
+                          (matlab-shell-completion-list cmd))))
     ;; Restore point if it was misplaced in console
     (dolist (win (get-buffer-window-list shell-buf nil t))
       (with-selected-window win
