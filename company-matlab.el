@@ -38,14 +38,15 @@
          (shell-buf (get-buffer (concat "*" matlab-shell-buffer-name "*"))))
     ;; Remove everything before ;
     (setq cmd (replace-regexp-in-string ".*;" "" cmd))
-    ;; Remember shell cursor position
-    (with-current-buffer shell-buf
-      (setq pt-shell (point))
-      (setq pre-shell-line(save-excursion (beginning-of-line) (point))))
     ;; Replace every ' with ''''
     (setq cmd (replace-regexp-in-string "'" "''''" cmd))
-    ;; Get completions
-    (setq completions (matlab-shell-completion-list cmd))
+    (with-current-buffer shell-buf
+      ;; Remember shell cursor position
+      (setq pt-shell (point))
+      (setq pre-shell-line(save-excursion (beginning-of-line) (point)))
+      ;; Get completions
+      (setq completions (let ((comint-inhibit-carriage-motion t))
+                        (matlab-shell-completion-list cmd))))
     ;; Restore point if it was misplaced in console
     (dolist (win (get-buffer-window-list shell-buf nil t))
       (with-selected-window win
