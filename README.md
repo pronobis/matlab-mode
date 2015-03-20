@@ -34,6 +34,8 @@ To use the flycheck mlint backedn, add the following to your init file:
   '(require 'flycheck-matlab-mlint))
 ```
 
+**NOTE!** Matlab binary folder, e.g. `/opt/MATLAB/R2013a/bin` must be in your path for this to work.
+
 
 # Original Project Documentation
 
