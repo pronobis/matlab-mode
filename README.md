@@ -3,7 +3,8 @@ This is an unofficial port of the MATLAB and Emacs integration mode from the pro
 1. Import to git
 2. New company-matlab.el backend that works both inside the Matlab shell and in Matlab files
 3. Fixed additional newlines and incorrect formatting of prompt after completion
-4. Re-enabled HTML parsing
+4. Fixed version parsing for new Matlab versions
+5. Re-enabled HTML parsing
 
 # Installation
 
