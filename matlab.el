@@ -5345,6 +5345,19 @@ This uses the lookfor command to find viable commands."
       (beginning-of-line)
       (looking-at (concat comint-prompt-regexp "\\s-*$")))))
 
+(defun matlab-on-double-empty-prompt-p ()
+  "Return t if we MATLAB is on an empty prompt and there is another empty prompt above."
+  (save-excursion
+    (let ((inhibit-field-text-motion t))
+      (goto-char (point-max))
+      (beginning-of-line)
+      (and (looking-at (concat comint-prompt-regexp "\\s-*$"))
+           (progn
+             (forward-line -1)
+             (beginning-of-line)
+             (looking-at (concat comint-prompt-regexp "\\s-*$")))))))
+
+
 (defun matlab-shell-buffer-barf-not-running ()
   "Return a running MATLAB buffer iff it is currently active."
   (or (matlab-shell-active-p)
@@ -5356,7 +5369,8 @@ It's output is returned as a string with no face properties.  The text output
 of the command is removed from the MATLAB buffer so there will be no
 indication that it ran."
   (let ((msbn (matlab-shell-buffer-barf-not-running))
-	(pos nil)
+	(pos1 nil)
+	(pos2 nil)
 	(str nil)
 	(lastcmd)
 	(inhibit-field-text-motion t))
@@ -5367,34 +5381,36 @@ indication that it ran."
       ;; Save the old command
       (goto-char (point-max))
       (beginning-of-line)
+      (setq pos1 (point))
       (re-search-forward comint-prompt-regexp)
+      (setq pos2 (point))
       (setq lastcmd (buffer-substring (point) (matlab-point-at-eol)))
       (delete-region (point) (matlab-point-at-eol))
       ;; We are done error checking, run the command.
-      (setq pos (point))
       (comint-simple-send (get-buffer-process (current-buffer))
 			  (concat command "\n"))
       ;;(message "MATLAB ... Executing command.")
       (goto-char (point-max))
-      (while (or (>= (+ pos (string-width command)) (point)) (not (matlab-on-empty-prompt-p)))
+      ;; We wait for double prompt since that's the respond we actually get
+      (while (or (>= pos2 (point)) (not (matlab-on-double-empty-prompt-p)))
 	(accept-process-output (get-buffer-process (current-buffer)))
 	(goto-char (point-max))
 	;;(message "MATLAB reading...")
 	)
       ;;(message "MATLAB reading...done")
+      (setq str (buffer-substring-no-properties (save-excursion
+                                                  (goto-char pos1)
+                                                  (beginning-of-line)
+                                                  (forward-line 1)
+                                                  (point))
+                                                (save-excursion
+                                                  (goto-char (point-max))
+                                                  (beginning-of-line)
+                                                  (point))))
       (save-excursion
-	(goto-char pos)
+	(goto-char (point-max))
 	(beginning-of-line)
-	(setq str (buffer-substring-no-properties (save-excursion
-						    (goto-char pos)
-						    (beginning-of-line)
-						    (forward-line 1)
-						    (point))
-						  (save-excursion
-						    (goto-char (point-max))
-						    (beginning-of-line)
-						    (point))))
-	(delete-region pos (point-max)))
+        (delete-region pos1 (point)))
       (insert lastcmd))
     str))
 

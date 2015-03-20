@@ -44,14 +44,20 @@
     (with-current-buffer shell-buf
       ;; Remember shell cursor position
       (setq pt-shell (point))
-      (setq pre-shell-line(save-excursion (beginning-of-line) (point)))
+      (setq pre-shell-line (save-excursion
+                             (let ((inhibit-field-text-motion t))
+                               (beginning-of-line))
+                             (point)))
       ;; Get completions
       (setq completions (let ((comint-inhibit-carriage-motion t))
                           (matlab-shell-completion-list cmd))))
     ;; Restore point if it was misplaced in console
     (dolist (win (get-buffer-window-list shell-buf nil t))
       (with-selected-window win
-        (setq post-shell-line (save-excursion (beginning-of-line) (point)))
+        (setq post-shell-line (save-excursion
+                                (let ((inhibit-field-text-motion t))
+                                  (beginning-of-line))
+                                (point)))
         (goto-char (+ post-shell-line (- pt-shell pre-shell-line)))))
     (mapcar 'car completions)))
 
