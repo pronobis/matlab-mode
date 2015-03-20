@@ -4494,9 +4494,9 @@ in a popup buffer.
   ;; Add a version scraping logo identification filter.
   (add-hook 'comint-output-filter-functions 'matlab-shell-version-scrape)
   ;; Add pseudo html-renderer
-  ;;(add-hook 'comint-output-filter-functions 'matlab-shell-render-html-anchor nil t)
-  ;;(add-hook 'comint-output-filter-functions 'matlab-shell-render-html-txt-format nil t)
-  ;;(add-hook 'comint-output-filter-functions 'matlab-shell-render-errors-as-anchor nil t)
+  (add-hook 'comint-output-filter-functions 'matlab-shell-render-html-anchor nil t)
+  (add-hook 'comint-output-filter-functions 'matlab-shell-render-html-txt-format nil t)
+  (add-hook 'comint-output-filter-functions 'matlab-shell-render-errors-as-anchor nil t)
   ;; Scroll to bottom after running cell/region
   (add-hook 'comint-output-filter-functions 'comint-postoutput-scroll-to-bottom)
 
