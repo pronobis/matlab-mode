@@ -1,7 +1,7 @@
 This is an unofficial port of the MATLAB and Emacs integration mode from the project CVS repo  (http://sourceforge.net/projects/matlab-emacs/) to GitHub (as of March 2015). The following changes were added on top of the original project:
 
-1. Import to git
-2. New company-matlab.el backend that works both inside the Matlab shell and in Matlab files
+1. New company-matlab.el backend that works both inside the Matlab shell and in Matlab files
+2. New flycheck-mlint back-end for flycheck which uses mlint to highlight warnings in Matlab files.
 3. Fixed additional newlines and incorrect formatting of prompt after completion
 4. Fixed version parsing for new Matlab versions
 5. Re-enabled HTML parsing
