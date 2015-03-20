@@ -67,7 +67,8 @@
          (pt-beg (save-excursion (matlab-beginning-of-command) (point)))
          (pt-end (point))
          (len (- pt-end pt-beg)))
-    (when (> len 0)
+    (when (and (> len 0)
+               (not (eq (preceding-char) ?\s)))  ; Do not complete just after space
       (cons symbol len))))
 
 (defun company-matlab-prefix ()
