@@ -27,6 +27,13 @@ To use the company completion engine, add company-matlab to company-mode backend
 
 **NOTE!** In order for the completions to work Matlab shell must be started!
 
+To use the flycheck mlint backedn, add the following to your init file:
+
+```
+(eval-after-load 'flycheck
+  '(require 'flycheck-matlab-mlint))
+```
+
 
 # Original Project Documentation
 
