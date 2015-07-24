@@ -60,10 +60,11 @@
   "Platform we are running mlint on.")
 
 (defvar flycheck-matlab-mlint-executable-path
-  (executable-find
-   (concat
-    (file-name-as-directory flycheck-matlab-mlint-platform)
-    "mlint"))
+  (or (executable-find
+       (concat
+        (file-name-as-directory flycheck-matlab-mlint-platform)
+        "mlint"))
+      "")
   "Default full executable path.")
 
 (flycheck-def-executable-var matlab-mlint "<platform>/mlint")
